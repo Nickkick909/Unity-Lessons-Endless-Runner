@@ -13,8 +13,13 @@ public class Player : MonoBehaviour
     [SerializeField] Animator anim;
     float lastYPosition;
     public float distanceTravelled;
+    public int coinsCollected = 0;
+    [SerializeField] bool canDoubleJump = false;
 
     [SerializeField] UIController uiController;
+
+    [SerializeField] GameObject shieldBubble;
+    [SerializeField] bool hasShield = false;
 
     private void Start()
     {
@@ -38,10 +43,19 @@ public class Player : MonoBehaviour
 
     void CheckForInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            jump = true;
-            anim.SetTrigger("Jump");
+            if (isGrounded)
+            {
+                jump = true;
+                anim.SetTrigger("Jump");
+            } else if (canDoubleJump)
+            {
+                canDoubleJump = false;
+                jump = true;
+                anim.SetTrigger("Jump");
+            }
+            
         }
     }
 
@@ -97,7 +111,43 @@ public class Player : MonoBehaviour
     {
         if (collision.transform.CompareTag("Obstacle"))
         {
+            if (hasShield)
+            {
+                Destroy(collision.gameObject);
+                hasShield = false;
+                shieldBubble.SetActive(false);
+            } else
+            {
+                uiController.ShowGameOver();
+            }
+            
+        }
+
+        if (collision.transform.CompareTag("Obstacle"))
+        {
             uiController.ShowGameOver();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.CompareTag("Collectable"))
+        {
+            coinsCollected += 1;
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.transform.CompareTag("DoubleJump"))
+        {
+            canDoubleJump = true;
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.transform.CompareTag("ShieldPowerUp"))
+        {
+            hasShield = true;
+            shieldBubble.SetActive(true);
+            Destroy(collision.gameObject);
         }
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class UIController : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI distanceTravelledNumber;
+    [SerializeField] TextMeshProUGUI coinsCollectedNumber;
     [SerializeField] GameObject gameOverScreen;
     [SerializeField] Player player;
 
@@ -21,5 +22,6 @@ public class UIController : MonoBehaviour
         gameOverScreen.SetActive(true);
         float roundedDistance = Mathf.Ceil(player.distanceTravelled);
         distanceTravelledNumber.text = roundedDistance.ToString();
+        coinsCollectedNumber.text = player.coinsCollected.ToString();
     }
 }
