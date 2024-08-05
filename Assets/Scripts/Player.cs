@@ -123,7 +123,7 @@ public class Player : MonoBehaviour
             
         }
 
-        if (collision.transform.CompareTag("Obstacle"))
+        if (collision.transform.CompareTag("DeathBox"))
         {
             uiController.ShowGameOver();
         }
