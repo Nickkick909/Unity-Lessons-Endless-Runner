@@ -9,7 +9,8 @@ public class PlatformSpawner : MonoBehaviour
 
     [SerializeField] private GameObject lastCreatedPlatform;
 
-    [SerializeField] private float spaceBetweenPlatforms = 2;
+    [SerializeField] private float spaceBetweenPlatformsMin = 2;
+    [SerializeField] private float spaceBetweenPlatformsMax = 5;
 
     float lastPlatformWidth;
     // Start is called before the first frame update
@@ -23,7 +24,8 @@ public class PlatformSpawner : MonoBehaviour
     {
         if (lastCreatedPlatform.transform.position.x < spawnPoint.position.x )
         {
-            Vector3 targetCreationPoint =  new Vector3(spawnPoint.position.x + lastPlatformWidth + spaceBetweenPlatforms, 0, 0);
+            float rndSpaceBetweenPlatforms = Random.Range(spaceBetweenPlatformsMin, spaceBetweenPlatformsMax);
+            Vector3 targetCreationPoint =  new Vector3(spawnPoint.position.x + lastPlatformWidth + rndSpaceBetweenPlatforms, 0, 0);
 
             int randomPlatform = Random.Range(0, platformPrefab.Length);
             lastCreatedPlatform = Instantiate(platformPrefab[randomPlatform], targetCreationPoint, Quaternion.identity);

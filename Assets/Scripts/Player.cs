@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public float distanceTravelled;
+    public int coinsCollected = 0;
 
     [SerializeField] Rigidbody2D rb;
     [SerializeField] float jumpForce = 5;
     [SerializeField] Transform raycastOrigin;
     [SerializeField] bool isGrounded = false;
-    bool jump;
     [SerializeField] Animator anim;
-    float lastYPosition;
-    public float distanceTravelled;
-    public int coinsCollected = 0;
     [SerializeField] bool canDoubleJump = false;
-
     [SerializeField] UIController uiController;
-
     [SerializeField] GameObject shieldBubble;
     [SerializeField] bool hasShield = false;
+    [SerializeField] SFXManager sfxManager;
+
+    bool jump;
+    float lastYPosition;
+    
+
 
     private void Start()
     {
@@ -67,6 +69,10 @@ public class Player : MonoBehaviour
         {
             if (hit.distance < 0.1f)
             {
+                if (isGrounded == false)
+                {
+                    sfxManager.PlaySFX("land");
+                }
                 isGrounded = true;
                 Debug.Log(hit.transform.name);
                 anim.SetBool("IsGrounded", true);
@@ -101,6 +107,13 @@ public class Player : MonoBehaviour
     {
         if (jump)
         {
+            if (isGrounded)
+            {
+                sfxManager.PlaySFX("jump");
+            } else
+            {
+                sfxManager.PlaySFX("doubleJump");
+            }
             jump = false;
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
         }
@@ -113,11 +126,13 @@ public class Player : MonoBehaviour
         {
             if (hasShield)
             {
+                sfxManager.PlaySFX("shieldBreak");
                 Destroy(collision.gameObject);
                 hasShield = false;
                 shieldBubble.SetActive(false);
             } else
             {
+                sfxManager.PlaySFX("gameOver");
                 uiController.ShowGameOver();
             }
             
@@ -125,6 +140,7 @@ public class Player : MonoBehaviour
 
         if (collision.transform.CompareTag("DeathBox"))
         {
+            sfxManager.PlaySFX("gameOver");
             uiController.ShowGameOver();
         }
     }
@@ -133,18 +149,21 @@ public class Player : MonoBehaviour
     {
         if (collision.transform.CompareTag("Collectable"))
         {
+            sfxManager.PlaySFX("coin");
             coinsCollected += 1;
             Destroy(collision.gameObject);
         }
 
         if (collision.transform.CompareTag("DoubleJump"))
         {
+            sfxManager.PlaySFX("powerUpDoubleJump");
             canDoubleJump = true;
             Destroy(collision.gameObject);
         }
 
         if (collision.transform.CompareTag("ShieldPowerUp"))
         {
+            sfxManager.PlaySFX("powerUpShield");
             hasShield = true;
             shieldBubble.SetActive(true);
             Destroy(collision.gameObject);
